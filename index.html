@@ -6,7 +6,6 @@
     <title>Sistem Stock Opname - iOS Modern</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
@@ -23,6 +22,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none !important; }
         #reader { width: 100%; border-radius: 12px; overflow: hidden; display: none; margin-bottom: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+        svg.icon { width: 1.25rem; height: 1.25rem; display: inline-block; vertical-align: text-bottom; }
     </style>
 </head>
 <body>
@@ -56,13 +56,18 @@
     <!-- MAIN APP SECTION -->
     <div id="mainSection" class="hidden min-h-screen pb-10">
         <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-40 p-4 shadow-sm flex justify-between items-center mb-6">
-            <h1 class="text-lg font-bold text-gray-800"><i class="fas fa-box-open text-blue-500"></i> Stock Opname</h1>
+            <h1 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg> 
+                Stock Opname
+            </h1>
             <div class="flex items-center gap-4">
                 <div class="text-right">
                     <p id="userFullName" class="text-sm font-bold text-gray-800 leading-tight"></p>
                     <p id="userInfo" class="text-xs font-semibold text-gray-500 leading-tight"></p>
                 </div>
-                <button onclick="logout(false)" class="text-red-500 hover:text-red-600 font-semibold text-sm transition"><i class="fas fa-sign-out-alt text-xl"></i></button>
+                <button onclick="logout(false)" class="text-red-500 hover:text-red-600 font-semibold text-sm transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
             </div>
         </nav>
 
@@ -80,10 +85,12 @@
                 <div class="mb-6">
                     <label class="block text-gray-500 text-sm font-semibold mb-2">Lokasi Penempatan</label>
                     <div class="flex gap-2">
+                        <!-- SVG List Icon -->
                         <button onclick="openLocationModal()" class="bg-blue-50 text-blue-600 px-4 py-3 rounded-xl hover:bg-blue-100 transition shadow-sm border border-blue-100">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         </button>
                         <input type="text" id="lokasi" onblur="checkNewLocation()" placeholder="Pilih/Scan Lokasi..." class="ios-input uppercase font-bold text-gray-800 flex-1">
+                        <!-- SVG Barcode Icon -->
                         <button onclick="toggleScanner('lokasi')" class="bg-gray-100 text-gray-600 px-4 py-3 rounded-xl hover:bg-gray-200 transition shadow-sm border border-gray-200">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                         </button>
@@ -96,6 +103,7 @@
                     <label class="block text-gray-500 text-sm font-semibold mb-2">Scan/Input Kode UPC / Part / Artikel</label>
                     <div class="flex gap-2">
                         <input type="text" id="scanCode" placeholder="Masukkan kode barang..." class="ios-input font-mono" onkeypress="if(event.key === 'Enter') processScan()">
+                        <!-- SVG Camera Icon -->
                         <button onclick="toggleScanner('scanCode')" class="bg-blue-500 text-white px-4 rounded-xl hover:bg-blue-600 shadow-sm transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H5v3a1 1 0 01-2 0V4zm14-1a1 1 0 011 1v3a1 1 0 01-2 0V5h-3a1 1 0 010-2h4zM3 20a1 1 0 011 1h4a1 1 0 110-2H5v-3a1 1 0 11-2 0v4zm14 1a1 1 0 01-1-1v-4a1 1 0 112 0v3h3a1 1 0 110 2h-4z"></path></svg>
                         </button>
@@ -124,7 +132,10 @@
                         <input type="text" id="f_note" placeholder="Kondisi barang / keterangan..." class="ios-input text-sm" onkeypress="if(event.key === 'Enter') saveData()">
                     </div>
 
-                    <button onclick="saveData()" class="ios-btn-primary bg-green-500 hover:bg-green-600 shadow-lg text-lg"><i class="fas fa-check-circle mr-2"></i> SIMPAN DATA</button>
+                    <button onclick="saveData()" class="ios-btn-primary bg-green-500 hover:bg-green-600 shadow-lg text-lg flex items-center justify-center gap-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        SIMPAN DATA
+                    </button>
                 </div>
             </div>
         </div>
@@ -134,7 +145,10 @@
             <div class="ios-card p-6 overflow-x-auto">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold">Riwayat Scan</h2>
-                    <button onclick="loadHistory()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 text-sm"><i class="fas fa-sync mr-1"></i> Refresh</button>
+                    <button onclick="loadHistory()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Refresh
+                    </button>
                 </div>
                 <table class="min-w-full text-sm text-left text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 rounded-t-lg">
@@ -155,8 +169,14 @@
         <div id="verifikasiTab" class="container mx-auto px-4 max-w-5xl fade-in hidden">
             <div class="ios-card p-6 overflow-x-auto">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-red-500"><i class="fas fa-exclamation-triangle"></i> Perlu Verifikasi</h2>
-                    <button onclick="loadVerifikasi()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 text-sm"><i class="fas fa-sync mr-1"></i> Refresh</button>
+                    <h2 class="text-xl font-bold text-red-500 flex items-center gap-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        Perlu Verifikasi
+                    </h2>
+                    <button onclick="loadVerifikasi()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Refresh
+                    </button>
                 </div>
                 <table class="min-w-full text-sm text-left text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase bg-red-50 rounded-t-lg">
@@ -180,7 +200,9 @@
         <div class="ios-card w-11/12 max-w-md bg-white rounded-2xl overflow-hidden flex flex-col max-h-[80vh]">
             <div class="p-4 border-b flex justify-between items-center bg-gray-50">
                 <h3 class="font-bold text-lg text-gray-800">Pilih / Cari Lokasi</h3>
-                <button onclick="closeLocationModal()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-2xl"></i></button>
+                <button onclick="closeLocationModal()" class="text-gray-400 hover:text-red-500 transition">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
             <div class="p-4 flex-1 flex flex-col overflow-hidden">
                 <input type="text" id="searchLocationInput" placeholder="Ketik untuk mencari lokasi..." class="ios-input mb-4" onkeyup="filterLocations()">
@@ -194,7 +216,6 @@
         // === GANTI DENGAN URL DEPLOY ANDA ===
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyiw3ltBUSsutzWpLc21VZaxsM9FABF7KTHWAajlTiZwHZWYYgI_MmXT-Eq5yv_P7eTvw/exec"; 
 
-        // State Management
         let currentUser = null;
         let currentRole = null;
         let sessionToken = null;
@@ -217,7 +238,6 @@
                 let sessionData = JSON.parse(sessionStr);
                 let now = new Date().getTime();
                 
-                // Cek apakah umur sesi belum lewat 12 Jam (43,200,000 ms)
                 if (now - sessionData.timestamp < (12 * 60 * 60 * 1000)) {
                     currentUser = sessionData.username;
                     currentRole = sessionData.role;
@@ -225,44 +245,47 @@
                     
                     showMainApp(sessionData.nama);
                     loadLocations(); 
-                    loading.classList.add('hidden'); // Sembunyikan loading
-                    return; // Bypass halaman login
+                    loading.classList.add('hidden');
+                    return; 
                 } else {
-                    localStorage.removeItem('so_session'); // Expired
+                    localStorage.removeItem('so_session'); 
                 }
             }
-            // Jika tidak ada sesi valid
             loading.classList.add('hidden');
             document.getElementById('loginSection').classList.remove('hidden');
             document.getElementById('loginSection').classList.add('flex');
         };
 
-        // --- MIDDLEWARE API FETCH ---
+        // --- MIDDLEWARE API FETCH (PENAMBAHAN REDIRECT: FOLLOW UNTUK MENCEGAH CORS 404) ---
         async function fetchGAS(action, params = {}) {
             const formData = new URLSearchParams();
             formData.append('action', action);
             
-            // Tambahkan Sesi ke setiap request
             if(currentUser && sessionToken) {
                 formData.append('username', currentUser);
                 formData.append('sessionToken', sessionToken);
             }
-
             for (const key in params) { formData.append(key, params[key]); }
             
             try {
-                const response = await fetch(GAS_URL, { method: 'POST', body: formData });
+                // REDIRECT FOLLOW DITAMBAHKAN AGAR BROWSER MENGIKUTI 302 DENGAN BENAR
+                const response = await fetch(GAS_URL, { 
+                    method: 'POST', 
+                    body: formData,
+                    redirect: 'follow' 
+                });
+                
                 const json = await response.json();
                 
-                // Jika API bilang Unauthorized (Token beda/Login di HP lain)
                 if(json.status === 'unauthorized') {
                     Swal.fire('Sesi Berakhir!', 'Akun Anda telah login di perangkat lain atau sesi sudah kadaluarsa. Silakan login kembali.', 'error');
-                    logout(true); // Paksa Keluar
+                    logout(true);
                     return null;
                 }
                 return json;
             } catch (error) {
-                Swal.fire('Koneksi Error', 'Gagal terhubung ke server.', 'error');
+                console.error("Fetch error details:", error);
+                Swal.fire('Koneksi Error', 'Gagal terhubung ke server. Pastikan URL GAS benar dan di-deploy sebagai "Anyone".', 'error');
                 return null;
             }
         }
@@ -283,7 +306,6 @@
                 currentRole = d.role.toLowerCase();
                 sessionToken = d.token;
                 
-                // Simpan Sesi di Browser + Waktu saat ini
                 localStorage.setItem('so_session', JSON.stringify({
                     username: currentUser, role: currentRole, token: sessionToken, 
                     nama: d.nama, timestamp: new Date().getTime()
@@ -325,9 +347,7 @@
             document.getElementById('password').value = '';
             if(isScannerOpen) stopScanner();
             
-            if(!isForced) {
-                Swal.fire({title: 'Logout Berhasil', icon: 'success', timer: 1000, showConfirmButton: false});
-            }
+            if(!isForced) Swal.fire({title: 'Logout Berhasil', icon: 'success', timer: 1000, showConfirmButton: false});
         }
 
         // --- NAVIGATION & TABS ---
@@ -407,8 +427,9 @@
             }
             filtered.forEach(loc => {
                 let div = document.createElement('div');
-                div.className = 'p-3 bg-gray-50 rounded-lg border border-gray-100 font-bold text-gray-700 cursor-pointer hover:bg-blue-50 transition';
-                div.innerHTML = `<i class="fas fa-map-marker-alt mr-2 text-gray-400"></i> ${loc}`;
+                div.className = 'p-3 bg-gray-50 rounded-lg border border-gray-100 font-bold text-gray-700 cursor-pointer hover:bg-blue-50 transition flex items-center gap-2';
+                // SVG Lokasi (Map Pin)
+                div.innerHTML = `<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> ${loc}`;
                 div.onclick = () => { document.getElementById('lokasi').value = loc; closeLocationModal(); document.getElementById('scanCode').focus(); };
                 container.appendChild(div);
             });
@@ -441,7 +462,7 @@
 
             Swal.showLoading();
             let res = await fetchGAS('checkItem', { scanCode: code, lokasi: lokasi });
-            if(!res) return; // Error di handle oleh fetchGAS middleware
+            if(!res) return; 
             Swal.close();
 
             if (res.duplicate) {
