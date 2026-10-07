@@ -4,86 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Stock Opname - iOS Modern</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- HTML5 QRCode Scanner -->
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
-        /* iOS Modern Aesthetic */
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: #F2F2F7; 
-            color: #1C1C1E;
-            -webkit-font-smoothing: antialiased;
-        }
-        .ios-card { 
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-radius: 20px; 
-            box-shadow: 0 4px 24px rgba(0,0,0,0.04); 
-        }
-        .ios-input { 
-            background: #FFFFFF; 
-            border: 1px solid #E5E5EA; 
-            border-radius: 12px; 
-            padding: 12px 16px; 
-            width: 100%; 
-            transition: all 0.2s; 
-            font-size: 16px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; background-color: #F2F2F7; color: #1C1C1E; -webkit-font-smoothing: antialiased; }
+        .ios-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
+        .ios-input { background: #FFFFFF; border: 1px solid #E5E5EA; border-radius: 12px; padding: 12px 16px; width: 100%; transition: all 0.2s; font-size: 16px; }
         .ios-input:focus { border-color: #007AFF; box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); outline: none; }
-        .ios-btn-primary { 
-            background: #007AFF; 
-            color: #fff; 
-            border-radius: 14px; 
-            font-weight: 600; 
-            padding: 14px; 
-            transition: 0.2s; 
-            width: 100%;
-            display: inline-block;
-            text-align: center;
-        }
+        .ios-btn-primary { background: #007AFF; color: #fff; border-radius: 14px; font-weight: 600; padding: 14px; transition: 0.2s; width: 100%; display: inline-block; text-align: center; }
         .ios-btn-primary:active { transform: scale(0.97); background: #0056b3; }
-        
-        .ios-segmented-control { 
-            background: #E5E5EA; 
-            border-radius: 12px; 
-            padding: 3px; 
-            display: flex; 
-            margin: 0 auto;
-            max-width: 500px;
-        }
-        .ios-segment { 
-            flex: 1; 
-            text-align: center; 
-            padding: 8px 16px; 
-            border-radius: 10px; 
-            font-weight: 600; 
-            color: #8E8E93; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            font-size: 14px;
-        }
+        .ios-segmented-control { background: #E5E5EA; border-radius: 12px; padding: 3px; display: flex; margin: 0 auto; max-width: 500px; }
+        .ios-segment { flex: 1; text-align: center; padding: 8px 16px; border-radius: 10px; font-weight: 600; color: #8E8E93; cursor: pointer; transition: 0.3s; font-size: 14px; }
         .ios-segment.active { background: #FFFFFF; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none !important; }
-        
-        /* Scanner Container */
         #reader { width: 100%; border-radius: 12px; overflow: hidden; display: none; margin-bottom: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
     </style>
 </head>
 <body>
 
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen" class="fixed inset-0 bg-white z-[999] flex flex-col items-center justify-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mb-4"></div>
+        <p class="text-gray-500 font-semibold">Memeriksa Sesi...</p>
+    </div>
+
     <!-- LOGIN SECTION -->
-    <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
+    <div id="loginSection" class="hidden min-h-screen items-center justify-center p-4">
         <div class="ios-card p-8 w-full max-w-md fade-in">
             <div class="text-center mb-8">
                 <div class="bg-blue-100 text-blue-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -96,27 +47,25 @@
                 <input type="text" id="username" placeholder="Username" class="ios-input" onkeypress="if(event.key === 'Enter') document.getElementById('password').focus()">
             </div>
             <div class="mb-6">
-                <!-- Tambah Fitur Login by Enter -->
                 <input type="password" id="password" placeholder="Password" class="ios-input" onkeypress="if(event.key === 'Enter') doLogin()">
             </div>
-            <button onclick="doLogin()" class="ios-btn-primary">
-                Login
-            </button>
+            <button onclick="doLogin()" class="ios-btn-primary">Login</button>
         </div>
     </div>
 
     <!-- MAIN APP SECTION -->
     <div id="mainSection" class="hidden min-h-screen pb-10">
-        <!-- Navbar -->
         <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-40 p-4 shadow-sm flex justify-between items-center mb-6">
             <h1 class="text-lg font-bold text-gray-800"><i class="fas fa-box-open text-blue-500"></i> Stock Opname</h1>
             <div class="flex items-center gap-4">
-                <span id="userInfo" class="text-sm font-semibold text-gray-600"></span>
-                <button onclick="logout()" class="text-red-500 hover:text-red-600 font-semibold text-sm transition"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                <div class="text-right">
+                    <p id="userFullName" class="text-sm font-bold text-gray-800 leading-tight"></p>
+                    <p id="userInfo" class="text-xs font-semibold text-gray-500 leading-tight"></p>
+                </div>
+                <button onclick="logout(false)" class="text-red-500 hover:text-red-600 font-semibold text-sm transition"><i class="fas fa-sign-out-alt text-xl"></i></button>
             </div>
         </nav>
 
-        <!-- Segmented Control Tabs -->
         <div class="px-4 mb-6">
             <div class="ios-segmented-control shadow-sm">
                 <div onclick="switchTab('formTab')" id="btnForm" class="ios-segment active">Input Form</div>
@@ -128,18 +77,13 @@
         <!-- FORM TAB -->
         <div id="formTab" class="container mx-auto px-4 max-w-3xl fade-in">
             <div class="ios-card p-6">
-                
-                <!-- Lokasi dengan SVG Button -->
                 <div class="mb-6">
                     <label class="block text-gray-500 text-sm font-semibold mb-2">Lokasi Penempatan</label>
                     <div class="flex gap-2">
-                        <!-- Tombol List (Membuka Modal) -->
                         <button onclick="openLocationModal()" class="bg-blue-50 text-blue-600 px-4 py-3 rounded-xl hover:bg-blue-100 transition shadow-sm border border-blue-100">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         </button>
-                        <!-- Input Manual/Readonly -->
                         <input type="text" id="lokasi" onblur="checkNewLocation()" placeholder="Pilih/Scan Lokasi..." class="ios-input uppercase font-bold text-gray-800 flex-1">
-                        <!-- Tombol Scan Barcode Lokasi -->
                         <button onclick="toggleScanner('lokasi')" class="bg-gray-100 text-gray-600 px-4 py-3 rounded-xl hover:bg-gray-200 transition shadow-sm border border-gray-200">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                         </button>
@@ -148,7 +92,6 @@
 
                 <hr class="my-5 border-gray-200">
 
-                <!-- Scan Item dengan SVG Scan -->
                 <div class="mb-2">
                     <label class="block text-gray-500 text-sm font-semibold mb-2">Scan/Input Kode UPC / Part / Artikel</label>
                     <div class="flex gap-2">
@@ -156,16 +99,12 @@
                         <button onclick="toggleScanner('scanCode')" class="bg-blue-500 text-white px-4 rounded-xl hover:bg-blue-600 shadow-sm transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H5v3a1 1 0 01-2 0V4zm14-1a1 1 0 011 1v3a1 1 0 01-2 0V5h-3a1 1 0 010-2h4zM3 20a1 1 0 011 1h4a1 1 0 110-2H5v-3a1 1 0 11-2 0v4zm14 1a1 1 0 01-1-1v-4a1 1 0 112 0v3h3a1 1 0 110 2h-4z"></path></svg>
                         </button>
-                        <button onclick="processScan()" class="bg-gray-800 text-white px-5 rounded-xl hover:bg-gray-900 shadow-sm transition font-bold">
-                            Cek
-                        </button>
+                        <button onclick="processScan()" class="bg-gray-800 text-white px-5 rounded-xl hover:bg-gray-900 shadow-sm transition font-bold">Cek</button>
                     </div>
                 </div>
 
-                <!-- HTML5 Scanner Reader Container -->
                 <div id="reader"></div>
 
-                <!-- Detail Section (ANIMASI DIHILANGKAN, MUNCUL INSTAN) -->
                 <div id="detailSection" class="hidden mt-6">
                     <div class="grid grid-cols-2 gap-3 mb-5 bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <div><label class="text-xs text-gray-400 block mb-1">Artikel Number</label><input type="text" id="f_artikel" readonly class="w-full bg-transparent font-semibold text-sm outline-none"></div>
@@ -219,7 +158,6 @@
                     <h2 class="text-xl font-bold text-red-500"><i class="fas fa-exclamation-triangle"></i> Perlu Verifikasi</h2>
                     <button onclick="loadVerifikasi()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 text-sm"><i class="fas fa-sync mr-1"></i> Refresh</button>
                 </div>
-                <p class="text-xs text-gray-500 mb-4">Menampilkan item dengan selisih Qty System vs Actual atau barang Unknown.</p>
                 <table class="min-w-full text-sm text-left text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase bg-red-50 rounded-t-lg">
                         <tr>
@@ -235,10 +173,9 @@
                 </table>
             </div>
         </div>
-
     </div>
 
-    <!-- MODAL PILIH LOKASI -->
+    <!-- MODAL LOKASI -->
     <div id="locationModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center fade-in">
         <div class="ios-card w-11/12 max-w-md bg-white rounded-2xl overflow-hidden flex flex-col max-h-[80vh]">
             <div class="p-4 border-b flex justify-between items-center bg-gray-50">
@@ -247,48 +184,90 @@
             </div>
             <div class="p-4 flex-1 flex flex-col overflow-hidden">
                 <input type="text" id="searchLocationInput" placeholder="Ketik untuk mencari lokasi..." class="ios-input mb-4" onkeyup="filterLocations()">
-                <div id="locationListContainer" class="overflow-y-auto flex-1 space-y-2">
-                    <!-- List Lokasi akan dirender di sini -->
-                </div>
+                <div id="locationListContainer" class="overflow-y-auto flex-1 space-y-2"></div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN SCRIPT -->
+    <!-- SCRIPT UTAMA -->
     <script>
-        // === GANTI URL INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA ===
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbywCJo9Pu0UgOwq1Z0HbndBC2ye8UtkFfg_HxTB9jTFX5HEj5oTFMjgWpBZWY7CzpAmaA/exec"; 
+        // === GANTI DENGAN URL DEPLOY ANDA ===
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyiw3ltBUSsutzWpLc21VZaxsM9FABF7KTHWAajlTiZwHZWYYgI_MmXT-Eq5yv_P7eTvw/exec"; 
 
         // State Management
         let currentUser = null;
         let currentRole = null;
+        let sessionToken = null;
+        
         let availableLocations = [];
         let currentScanStatus = 'unknown';
         let editRowIndex = null;
-        let editMode = ''; // 'add' atau 'replace'
+        let editMode = '';
         
-        // Scanner Instance
         let html5QrCode = null;
         let isScannerOpen = false;
-        let scanTargetId = 'scanCode'; // Bisa 'scanCode' atau 'lokasi'
+        let scanTargetId = 'scanCode';
 
-        // --- CORE FUNCTIONS ---
+        // --- SISTEM SESI LOKAL (12 JAM) ---
+        window.onload = function() {
+            let sessionStr = localStorage.getItem('so_session');
+            let loading = document.getElementById('loadingScreen');
+            
+            if (sessionStr) {
+                let sessionData = JSON.parse(sessionStr);
+                let now = new Date().getTime();
+                
+                // Cek apakah umur sesi belum lewat 12 Jam (43,200,000 ms)
+                if (now - sessionData.timestamp < (12 * 60 * 60 * 1000)) {
+                    currentUser = sessionData.username;
+                    currentRole = sessionData.role;
+                    sessionToken = sessionData.token;
+                    
+                    showMainApp(sessionData.nama);
+                    loadLocations(); 
+                    loading.classList.add('hidden'); // Sembunyikan loading
+                    return; // Bypass halaman login
+                } else {
+                    localStorage.removeItem('so_session'); // Expired
+                }
+            }
+            // Jika tidak ada sesi valid
+            loading.classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('loginSection').classList.add('flex');
+        };
+
+        // --- MIDDLEWARE API FETCH ---
         async function fetchGAS(action, params = {}) {
             const formData = new URLSearchParams();
             formData.append('action', action);
-            for (const key in params) {
-                formData.append(key, params[key]);
+            
+            // Tambahkan Sesi ke setiap request
+            if(currentUser && sessionToken) {
+                formData.append('username', currentUser);
+                formData.append('sessionToken', sessionToken);
             }
+
+            for (const key in params) { formData.append(key, params[key]); }
+            
             try {
                 const response = await fetch(GAS_URL, { method: 'POST', body: formData });
-                return await response.json();
+                const json = await response.json();
+                
+                // Jika API bilang Unauthorized (Token beda/Login di HP lain)
+                if(json.status === 'unauthorized') {
+                    Swal.fire('Sesi Berakhir!', 'Akun Anda telah login di perangkat lain atau sesi sudah kadaluarsa. Silakan login kembali.', 'error');
+                    logout(true); // Paksa Keluar
+                    return null;
+                }
+                return json;
             } catch (error) {
                 Swal.fire('Koneksi Error', 'Gagal terhubung ke server.', 'error');
                 return null;
             }
         }
 
-        // --- AUTH & NAVIGATION ---
+        // --- AUTH LOGIC ---
         async function doLogin() {
             let u = document.getElementById('username').value.trim();
             let p = document.getElementById('password').value.trim();
@@ -299,37 +278,59 @@
             Swal.close();
 
             if (res && res.status === 'success') {
-                currentUser = res.username;
-                currentRole = res.role.toLowerCase();
+                let d = res.data;
+                currentUser = d.username;
+                currentRole = d.role.toLowerCase();
+                sessionToken = d.token;
                 
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('mainSection').classList.remove('hidden');
-                document.getElementById('userInfo').innerText = `${currentUser} (${currentRole})`;
+                // Simpan Sesi di Browser + Waktu saat ini
+                localStorage.setItem('so_session', JSON.stringify({
+                    username: currentUser, role: currentRole, token: sessionToken, 
+                    nama: d.nama, timestamp: new Date().getTime()
+                }));
                 
-                if(currentRole === 'staff') {
-                    document.getElementById('wrapQtySystem').classList.add('hidden');
-                    document.getElementById('btnVerif').classList.add('hidden');
-                } else {
-                    document.getElementById('wrapQtySystem').classList.remove('hidden');
-                    document.getElementById('btnVerif').classList.remove('hidden'); 
-                }
-
+                showMainApp(d.nama);
                 loadLocations();
-                setTimeout(() => document.getElementById('lokasi').focus(), 500);
-            } else {
+            } else if (res) {
                 Swal.fire('Gagal', res.message, 'error');
             }
         }
 
-        function logout() {
-            currentUser = null; currentRole = null;
+        function showMainApp(nama) {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('flex');
+            document.getElementById('mainSection').classList.remove('hidden');
+            
+            document.getElementById('userFullName').innerText = nama;
+            document.getElementById('userInfo').innerText = `${currentUser} | ${currentRole.toUpperCase()}`;
+            
+            if(currentRole === 'staff') {
+                document.getElementById('wrapQtySystem').classList.add('hidden');
+                document.getElementById('btnVerif').classList.add('hidden');
+            } else {
+                document.getElementById('wrapQtySystem').classList.remove('hidden');
+                document.getElementById('btnVerif').classList.remove('hidden'); 
+            }
+        }
+
+        function logout(isForced = false) {
+            localStorage.removeItem('so_session');
+            currentUser = null; currentRole = null; sessionToken = null;
+            
             document.getElementById('mainSection').classList.add('hidden');
             document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('loginSection').classList.add('flex');
+            
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
             if(isScannerOpen) stopScanner();
+            
+            if(!isForced) {
+                Swal.fire({title: 'Logout Berhasil', icon: 'success', timer: 1000, showConfirmButton: false});
+            }
         }
 
+        // --- NAVIGATION & TABS ---
         function switchTab(tabId) {
             ['formTab', 'historyTab', 'verifikasiTab'].forEach(id => {
                 let el = document.getElementById(id);
@@ -347,9 +348,9 @@
             if(tabId === 'verifikasiTab') loadVerifikasi();
         }
 
-        // --- CAMERA SCANNER LOGIC (Multitarget) ---
+        // --- SCANNER LOGIC ---
         function toggleScanner(targetId) {
-            scanTargetId = targetId; // set target ke mana hasil scan masuk
+            scanTargetId = targetId; 
             const readerDiv = document.getElementById("reader");
             
             if(isScannerOpen) {
@@ -357,18 +358,14 @@
             } else {
                 readerDiv.style.display = "block";
                 html5QrCode = new Html5Qrcode("reader");
-                html5QrCode.start(
-                    { facingMode: "environment" }, 
-                    { fps: 10, qrbox: {width: 250, height: 250} },
+                html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: {width: 250, height: 250} },
                     (decodedText) => {
                         document.getElementById(scanTargetId).value = decodedText;
                         stopScanner();
-                        
-                        // Auto trigger
                         if(scanTargetId === 'scanCode') processScan();
                         if(scanTargetId === 'lokasi') checkNewLocation();
                     },
-                    (errorMessage) => { /* ignore */ }
+                    (error) => {}
                 ).then(() => { isScannerOpen = true; }).catch(err => {
                     Swal.fire('Kamera Error', 'Tidak dapat mengakses kamera.', 'error');
                     readerDiv.style.display = "none";
@@ -378,11 +375,7 @@
 
         function stopScanner() {
             if(html5QrCode && isScannerOpen) {
-                html5QrCode.stop().then(() => {
-                    html5QrCode.clear();
-                    document.getElementById("reader").style.display = "none";
-                    isScannerOpen = false;
-                });
+                html5QrCode.stop().then(() => { html5QrCode.clear(); document.getElementById("reader").style.display = "none"; isScannerOpen = false; });
             }
         }
 
@@ -402,64 +395,37 @@
             setTimeout(() => document.getElementById('searchLocationInput').focus(), 100);
         }
 
-        function closeLocationModal() {
-            document.getElementById('locationModal').classList.add('hidden');
-        }
+        function closeLocationModal() { document.getElementById('locationModal').classList.add('hidden'); }
 
         function renderLocationList(filterText = '') {
             let container = document.getElementById('locationListContainer');
             container.innerHTML = '';
-            
             let filtered = availableLocations.filter(loc => loc.toLowerCase().includes(filterText.toLowerCase()));
             
             if(filtered.length === 0) {
-                container.innerHTML = `<p class="text-gray-500 text-center mt-4 text-sm">Lokasi tidak ditemukan. Ketik di form luar untuk menambah lokasi baru.</p>`;
-                return;
+                container.innerHTML = `<p class="text-gray-500 text-center mt-4 text-sm">Lokasi tidak ditemukan.</p>`; return;
             }
-
             filtered.forEach(loc => {
                 let div = document.createElement('div');
-                div.className = 'p-3 bg-gray-50 rounded-lg border border-gray-100 font-bold text-gray-700 cursor-pointer hover:bg-blue-50 hover:text-blue-600 transition';
+                div.className = 'p-3 bg-gray-50 rounded-lg border border-gray-100 font-bold text-gray-700 cursor-pointer hover:bg-blue-50 transition';
                 div.innerHTML = `<i class="fas fa-map-marker-alt mr-2 text-gray-400"></i> ${loc}`;
-                div.onclick = () => {
-                    document.getElementById('lokasi').value = loc;
-                    closeLocationModal();
-                    document.getElementById('scanCode').focus();
-                };
+                div.onclick = () => { document.getElementById('lokasi').value = loc; closeLocationModal(); document.getElementById('scanCode').focus(); };
                 container.appendChild(div);
             });
         }
 
-        function filterLocations() {
-            let text = document.getElementById('searchLocationInput').value;
-            renderLocationList(text);
-        }
+        function filterLocations() { renderLocationList(document.getElementById('searchLocationInput').value); }
 
         async function checkNewLocation() {
             let locInput = document.getElementById('lokasi').value.toUpperCase().trim();
-            if (!locInput) return;
+            if (!locInput || availableLocations.includes(locInput)) return;
 
-            if (!availableLocations.includes(locInput)) {
-                let confirm = await Swal.fire({
-                    title: 'Lokasi Baru',
-                    text: `Tambahkan "${locInput}" ke daftar lokasi?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Tambahkan',
-                    cancelButtonText: 'Batal'
-                });
-
-                if (confirm.isConfirmed) {
-                    Swal.showLoading();
-                    let res = await fetchGAS('addLocation', { locationName: locInput });
-                    if (res.status === 'success') {
-                        availableLocations.push(locInput);
-                        Swal.fire('Berhasil', 'Lokasi ditambahkan', 'success');
-                    }
-                } else {
-                    document.getElementById('lokasi').value = '';
-                }
-            }
+            let confirm = await Swal.fire({ title: 'Lokasi Baru', text: `Tambahkan "${locInput}" ke daftar?`, icon: 'question', showCancelButton: true, confirmButtonText: 'Ya' });
+            if (confirm.isConfirmed) {
+                Swal.showLoading();
+                let res = await fetchGAS('addLocation', { locationName: locInput });
+                if (res && res.status === 'success') { availableLocations.push(locInput); Swal.fire('Berhasil', 'Lokasi ditambahkan', 'success'); }
+            } else { document.getElementById('lokasi').value = ''; }
         }
 
         // --- SCAN LOGIC ---
@@ -471,192 +437,88 @@
             if(!code) return;
 
             document.getElementById('detailSection').classList.add('hidden');
-            editRowIndex = null; 
-            editMode = '';
+            editRowIndex = null; editMode = '';
 
             Swal.showLoading();
             let res = await fetchGAS('checkItem', { scanCode: code, lokasi: lokasi });
+            if(!res) return; // Error di handle oleh fetchGAS middleware
             Swal.close();
 
-            // POP UP REPLACE / ADD / BATAL
-            if (res && res.duplicate) {
+            if (res.duplicate) {
                 let action = await Swal.fire({
-                    title: 'Barang Sudah Di-Scan!',
-                    text: `Di lokasi ${lokasi}, barang ini sudah tercatat dengan total Qty = ${res.duplicate.qtyActual}.`,
-                    icon: 'warning',
-                    showDenyButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Add (Tambah)', // Tombol biru kanan
-                    denyButtonText: 'Replace (Tiban)', // Tombol merah kiri
-                    cancelButtonText: 'Batal',
-                    confirmButtonColor: '#007AFF', // Biru iOS
-                    denyButtonColor: '#FF3B30', // Merah iOS
+                    title: 'Barang Sudah Di-Scan!', text: `Terdapat stok sebelumnya Qty = ${res.duplicate.qtyActual}.`, icon: 'warning',
+                    showDenyButton: true, showCancelButton: true, confirmButtonText: 'Add (Tambah)', denyButtonText: 'Replace (Tiban)', cancelButtonText: 'Batal',
+                    confirmButtonColor: '#007AFF', denyButtonColor: '#FF3B30',
                 });
 
-                if (action.isConfirmed) {
-                    // USER PILIH ADD (TAMBAH)
-                    editRowIndex = res.duplicate.rowIndex;
-                    editMode = 'add';
-                    document.getElementById('f_qtyActual').value = ''; 
-                    document.getElementById('f_note').value = res.duplicate.catatan;
-                } else if (action.isDenied) {
-                    // USER PILIH REPLACE (GANTI)
-                    editRowIndex = res.duplicate.rowIndex;
-                    editMode = 'replace';
-                    document.getElementById('f_qtyActual').value = res.duplicate.qtyActual; // Tampilkan qty lama utk diedit/ditiban
-                    document.getElementById('f_note').value = res.duplicate.catatan;
-                } else {
-                    document.getElementById('scanCode').value = '';
-                    document.getElementById('scanCode').focus();
-                    return; // Dibatalkan, berhenti di sini
-                }
+                if (action.isConfirmed) { editRowIndex = res.duplicate.rowIndex; editMode = 'add'; document.getElementById('f_qtyActual').value = ''; document.getElementById('f_note').value = res.duplicate.catatan; } 
+                else if (action.isDenied) { editRowIndex = res.duplicate.rowIndex; editMode = 'replace'; document.getElementById('f_qtyActual').value = res.duplicate.qtyActual; document.getElementById('f_note').value = res.duplicate.catatan; } 
+                else { document.getElementById('scanCode').value = ''; document.getElementById('scanCode').focus(); return; }
             } else {
-                document.getElementById('f_qtyActual').value = '';
-                document.getElementById('f_note').value = '';
+                document.getElementById('f_qtyActual').value = ''; document.getElementById('f_note').value = '';
             }
 
-            // MUNCULKAN DETAIL INSTAN (Tanpa Animasi Fade In)
             document.getElementById('detailSection').classList.remove('hidden');
-
-            if (res && res.status === 'found') {
+            if (res.status === 'found') {
                 let d = res.data;
-                document.getElementById('f_artikel').value = d.artikelNumber;
-                document.getElementById('f_deskripsi').value = d.deskripsi;
-                document.getElementById('f_dept').value = d.department;
-                document.getElementById('f_brand').value = d.brand;
-                document.getElementById('f_qtySystem').value = d.qtySystem;
-                currentScanStatus = 'matched';
-                document.getElementById('f_qtyActual').focus();
+                document.getElementById('f_artikel').value = d.artikelNumber; document.getElementById('f_deskripsi').value = d.deskripsi;
+                document.getElementById('f_dept').value = d.department; document.getElementById('f_brand').value = d.brand;
+                document.getElementById('f_qtySystem').value = d.qtySystem; currentScanStatus = 'matched'; document.getElementById('f_qtyActual').focus();
             } else {
-                let confirm = await Swal.fire({
-                    title: 'Data Tidak Ditemukan',
-                    text: "Item ini tidak ada di Master Data. Lanjutkan sebagai barang Unknown?",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, Lanjutkan',
-                    cancelButtonText: 'Batal'
-                });
-
+                let confirm = await Swal.fire({ title: 'Tidak Ditemukan', text: "Lanjutkan sebagai barang Unknown?", icon: 'question', showCancelButton: true, confirmButtonText: 'Ya' });
                 if (confirm.isConfirmed) {
-                    document.getElementById('f_artikel').value = code;
-                    document.getElementById('f_deskripsi').value = 'UNKNOWN';
-                    document.getElementById('f_dept').value = '-';
-                    document.getElementById('f_brand').value = '-';
-                    document.getElementById('f_qtySystem').value = '0';
-                    currentScanStatus = 'unknown';
-                    document.getElementById('f_qtyActual').focus();
-                } else {
-                    document.getElementById('detailSection').classList.add('hidden');
-                    document.getElementById('scanCode').value = '';
-                }
+                    document.getElementById('f_artikel').value = code; document.getElementById('f_deskripsi').value = 'UNKNOWN';
+                    document.getElementById('f_dept').value = '-'; document.getElementById('f_brand').value = '-';
+                    document.getElementById('f_qtySystem').value = '0'; currentScanStatus = 'unknown'; document.getElementById('f_qtyActual').focus();
+                } else { document.getElementById('detailSection').classList.add('hidden'); document.getElementById('scanCode').value = ''; }
             }
         }
 
         async function saveData() {
-            let lokasi = document.getElementById('lokasi').value;
-            let scanCode = document.getElementById('scanCode').value;
-            let qtyActual = document.getElementById('f_qtyActual').value;
-            let note = document.getElementById('f_note').value;
-
-            if(!lokasi || !scanCode || qtyActual === '') {
-                return Swal.fire('Error', 'Input Qty Actual wajib diisi!', 'error');
-            }
+            let lokasi = document.getElementById('lokasi').value; let scanCode = document.getElementById('scanCode').value;
+            let qtyActual = document.getElementById('f_qtyActual').value; let note = document.getElementById('f_note').value;
+            if(!lokasi || !scanCode || qtyActual === '') return Swal.fire('Error', 'Input Qty Actual wajib diisi!', 'error');
 
             Swal.showLoading();
             let payload = {
-                user: currentUser, lokasi: lokasi, scanCode: scanCode,
-                artikelNumber: document.getElementById('f_artikel').value,
-                deskripsi: document.getElementById('f_deskripsi').value,
-                department: document.getElementById('f_dept').value,
-                brand: document.getElementById('f_brand').value,
-                vendor: '-', qtySystem: document.getElementById('f_qtySystem').value || 0,
-                qtyActual: qtyActual, statusData: currentScanStatus, catatan: note,
-                editRowIndex: editRowIndex, editMode: editMode // 'add' atau 'replace'
+                user: currentUser, lokasi: lokasi, scanCode: scanCode, artikelNumber: document.getElementById('f_artikel').value,
+                deskripsi: document.getElementById('f_deskripsi').value, department: document.getElementById('f_dept').value,
+                brand: document.getElementById('f_brand').value, vendor: '-', qtySystem: document.getElementById('f_qtySystem').value || 0,
+                qtyActual: qtyActual, statusData: currentScanStatus, catatan: note, editRowIndex: editRowIndex, editMode: editMode
             };
 
             let res = await fetchGAS('saveData', payload);
             if(res && res.status === 'success') {
-                Swal.fire({
-                    title: 'Tersimpan!', text: res.message, icon: 'success',
-                    timer: 1500, showConfirmButton: false
-                });
-                
-                document.getElementById('scanCode').value = '';
-                document.getElementById('detailSection').classList.add('hidden');
-                editRowIndex = null; editMode = '';
-                document.getElementById('scanCode').focus();
+                Swal.fire({ title: 'Tersimpan!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false });
+                document.getElementById('scanCode').value = ''; document.getElementById('detailSection').classList.add('hidden');
+                editRowIndex = null; editMode = ''; document.getElementById('scanCode').focus();
             }
         }
 
-        // --- HISTORY TAB ---
+        // --- HISTORY & VERIFIKASI ---
         async function loadHistory() {
-            Swal.showLoading();
-            let res = await fetchGAS('getHistory');
-            Swal.close();
-
+            Swal.showLoading(); let res = await fetchGAS('getHistory'); Swal.close();
             if (res && res.status === 'success') {
-                let tbody = document.getElementById('historyTableBody');
-                tbody.innerHTML = '';
+                let tbody = document.getElementById('historyTableBody'); tbody.innerHTML = '';
                 res.data.forEach(row => {
-                    let dateObj = new Date(row.waktu);
-                    let tr = document.createElement('tr');
-                    tr.className = 'border-b hover:bg-gray-50';
-                    tr.innerHTML = `
-                        <td class="py-3 px-4 text-xs">${dateObj.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</td>
-                        <td class="py-3 px-4 font-semibold">${row.lokasi}</td>
-                        <td class="py-3 px-4 text-xs">${row.artikel}<br><span class="text-gray-400">${row.deskripsi.substring(0,20)}...</span></td>
-                        <td class="py-3 px-4 font-bold text-center text-blue-600">${row.qtyActual}</td>
-                        <td class="py-3 px-4">
-                            <span class="px-2 py-1 rounded-md text-xs font-bold text-white ${row.status === 'matched' ? 'bg-green-500' : 'bg-red-500'}">${row.status.toUpperCase()}</span>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
+                    let d = new Date(row.waktu);
+                    tbody.innerHTML += `<tr class="border-b hover:bg-gray-50"><td class="py-3 px-4 text-xs">${d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</td><td class="py-3 px-4 font-semibold">${row.lokasi}</td><td class="py-3 px-4 text-xs">${row.artikel}<br><span class="text-gray-400">${row.deskripsi.substring(0,20)}...</span></td><td class="py-3 px-4 font-bold text-center text-blue-600">${row.qtyActual}</td><td class="py-3 px-4"><span class="px-2 py-1 rounded-md text-xs font-bold text-white ${row.status === 'matched' ? 'bg-green-500' : 'bg-red-500'}">${row.status.toUpperCase()}</span></td></tr>`;
                 });
             }
         }
 
-        // --- VERIFIKASI TAB (Admin) ---
         async function loadVerifikasi() {
-            Swal.showLoading();
-            let res = await fetchGAS('getVerification');
-            Swal.close();
-
+            Swal.showLoading(); let res = await fetchGAS('getVerification'); Swal.close();
             if (res && res.status === 'success') {
-                let tbody = document.getElementById('verifikasiTableBody');
-                tbody.innerHTML = '';
-                if(res.data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4">Semua data aman!</td></tr>`;
-                    return;
-                }
-
+                let tbody = document.getElementById('verifikasiTableBody'); tbody.innerHTML = '';
+                if(res.data.length === 0) return tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4">Semua data aman!</td></tr>`;
                 res.data.forEach(row => {
-                    let selisih = row.qtyAct - row.qtySys;
-                    let colorSelisih = selisih > 0 ? 'text-green-500' : (selisih < 0 ? 'text-red-500' : '');
-                    let tr = document.createElement('tr');
-                    tr.className = 'border-b hover:bg-red-50';
-                    tr.innerHTML = `
-                        <td class="py-3 px-3 font-semibold text-xs">${row.lokasi}</td>
-                        <td class="py-3 px-3 text-xs font-mono">${row.artikel}</td>
-                        <td class="py-3 px-2 text-center font-bold text-gray-400">${row.qtySys}</td>
-                        <td class="py-3 px-2 text-center font-bold text-blue-600">${row.qtyAct}</td>
-                        <td class="py-3 px-2 text-center font-bold ${colorSelisih}">${selisih > 0 ? '+'+selisih : selisih}</td>
-                        <td class="py-3 px-3 text-center">
-                            <button onclick="approveVerifikasi('${row.rowIndex}')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold shadow">Verif</button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
+                    let sel = row.qtyAct - row.qtySys; let col = sel > 0 ? 'text-green-500' : (sel < 0 ? 'text-red-500' : '');
+                    tbody.innerHTML += `<tr class="border-b hover:bg-red-50"><td class="py-3 px-3 font-semibold text-xs">${row.lokasi}</td><td class="py-3 px-3 text-xs font-mono">${row.artikel}</td><td class="py-3 px-2 text-center font-bold text-gray-400">${row.qtySys}</td><td class="py-3 px-2 text-center font-bold text-blue-600">${row.qtyAct}</td><td class="py-3 px-2 text-center font-bold ${col}">${sel > 0 ? '+'+sel : sel}</td><td class="py-3 px-3 text-center"><button onclick="approveVerifikasi('${row.rowIndex}')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold shadow">Verif</button></td></tr>`;
                 });
             }
         }
-
-        async function approveVerifikasi(rowIndex) {
-            Swal.showLoading();
-            let res = await fetchGAS('verifyItem', { rowIndex: rowIndex });
-            if (res && res.status === 'success') {
-                Swal.fire({title: 'Terverifikasi!', icon: 'success', timer: 1000, showConfirmButton: false});
-                loadVerifikasi();
-            }
-        }
+        async function approveVerifikasi(rowIndex) { Swal.showLoading(); let res = await fetchGAS('verifyItem', { rowIndex: rowIndex }); if (res && res.status === 'success') { Swal.fire({title: 'Terverifikasi!', icon: 'success', timer: 1000, showConfirmButton: false}); loadVerifikasi(); } }
     </script>
 </body>
 </html>
