@@ -22,7 +22,7 @@
             -webkit-font-smoothing: antialiased;
         }
         .ios-card { 
-            background: rgba(255, 255, 255, 0.85); 
+            background: rgba(255, 255, 255, 0.95); 
             backdrop-filter: blur(20px); 
             -webkit-backdrop-filter: blur(20px); 
             border-radius: 20px; 
@@ -72,8 +72,8 @@
         }
         .ios-segment.active { background: #FFFFFF; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         
-        .fade-in { animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none !important; }
         
         /* Scanner Container */
@@ -83,20 +83,21 @@
 <body>
 
     <!-- LOGIN SECTION -->
-    <div id="loginSection" class="min-h-screen flex items-center justify-center fade-in p-4">
-        <div class="ios-card p-8 w-full max-w-md">
+    <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
+        <div class="ios-card p-8 w-full max-w-md fade-in">
             <div class="text-center mb-8">
                 <div class="bg-blue-100 text-blue-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-box-open text-3xl"></i>
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                 </div>
                 <h2 class="text-2xl font-bold">Stock Opname</h2>
                 <p class="text-gray-500 text-sm">Masuk untuk melanjutkan</p>
             </div>
             <div class="mb-4">
-                <input type="text" id="username" placeholder="Username" class="ios-input">
+                <input type="text" id="username" placeholder="Username" class="ios-input" onkeypress="if(event.key === 'Enter') document.getElementById('password').focus()">
             </div>
             <div class="mb-6">
-                <input type="password" id="password" placeholder="Password" class="ios-input">
+                <!-- Tambah Fitur Login by Enter -->
+                <input type="password" id="password" placeholder="Password" class="ios-input" onkeypress="if(event.key === 'Enter') doLogin()">
             </div>
             <button onclick="doLogin()" class="ios-btn-primary">
                 Login
@@ -107,7 +108,7 @@
     <!-- MAIN APP SECTION -->
     <div id="mainSection" class="hidden min-h-screen pb-10">
         <!-- Navbar -->
-        <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 p-4 shadow-sm flex justify-between items-center mb-6">
+        <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-40 p-4 shadow-sm flex justify-between items-center mb-6">
             <h1 class="text-lg font-bold text-gray-800"><i class="fas fa-box-open text-blue-500"></i> Stock Opname</h1>
             <div class="flex items-center gap-4">
                 <span id="userInfo" class="text-sm font-semibold text-gray-600"></span>
@@ -127,24 +128,35 @@
         <!-- FORM TAB -->
         <div id="formTab" class="container mx-auto px-4 max-w-3xl fade-in">
             <div class="ios-card p-6">
-                <!-- Lokasi Datalist -->
+                
+                <!-- Lokasi dengan SVG Button -->
                 <div class="mb-6">
-                    <label class="block text-gray-500 text-sm font-semibold mb-2">Pilih / Cari Lokasi</label>
-                    <input type="text" list="lokasiList" id="lokasi" onblur="checkLocation()" placeholder="Mulai ketik lokasi..." class="ios-input uppercase font-bold text-gray-800">
-                    <datalist id="lokasiList"></datalist>
+                    <label class="block text-gray-500 text-sm font-semibold mb-2">Lokasi Penempatan</label>
+                    <div class="flex gap-2">
+                        <!-- Tombol List (Membuka Modal) -->
+                        <button onclick="openLocationModal()" class="bg-blue-50 text-blue-600 px-4 py-3 rounded-xl hover:bg-blue-100 transition shadow-sm border border-blue-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        </button>
+                        <!-- Input Manual/Readonly -->
+                        <input type="text" id="lokasi" onblur="checkNewLocation()" placeholder="Pilih/Scan Lokasi..." class="ios-input uppercase font-bold text-gray-800 flex-1">
+                        <!-- Tombol Scan Barcode Lokasi -->
+                        <button onclick="toggleScanner('lokasi')" class="bg-gray-100 text-gray-600 px-4 py-3 rounded-xl hover:bg-gray-200 transition shadow-sm border border-gray-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <hr class="my-5 border-gray-200">
 
-                <!-- Scan Item -->
+                <!-- Scan Item dengan SVG Scan -->
                 <div class="mb-2">
                     <label class="block text-gray-500 text-sm font-semibold mb-2">Scan/Input Kode UPC / Part / Artikel</label>
                     <div class="flex gap-2">
-                        <input type="text" id="scanCode" placeholder="Masukkan kode barang..." class="ios-input font-mono">
-                        <button onclick="toggleScanner()" class="bg-gray-100 text-gray-700 px-4 rounded-xl hover:bg-gray-200 transition">
-                            <i class="fas fa-camera text-xl"></i>
+                        <input type="text" id="scanCode" placeholder="Masukkan kode barang..." class="ios-input font-mono" onkeypress="if(event.key === 'Enter') processScan()">
+                        <button onclick="toggleScanner('scanCode')" class="bg-blue-500 text-white px-4 rounded-xl hover:bg-blue-600 shadow-sm transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H5v3a1 1 0 01-2 0V4zm14-1a1 1 0 011 1v3a1 1 0 01-2 0V5h-3a1 1 0 010-2h4zM3 20a1 1 0 011 1h4a1 1 0 110-2H5v-3a1 1 0 11-2 0v4zm14 1a1 1 0 01-1-1v-4a1 1 0 112 0v3h3a1 1 0 110 2h-4z"></path></svg>
                         </button>
-                        <button onclick="processScan()" class="bg-blue-500 text-white px-5 rounded-xl hover:bg-blue-600 shadow-sm transition font-bold">
+                        <button onclick="processScan()" class="bg-gray-800 text-white px-5 rounded-xl hover:bg-gray-900 shadow-sm transition font-bold">
                             Cek
                         </button>
                     </div>
@@ -153,9 +165,8 @@
                 <!-- HTML5 Scanner Reader Container -->
                 <div id="reader"></div>
 
-                <!-- Hidden Detail Section -->
-                <div id="detailSection" class="hidden mt-6 fade-in">
-                    <!-- Read Only Details -->
+                <!-- Detail Section (ANIMASI DIHILANGKAN, MUNCUL INSTAN) -->
+                <div id="detailSection" class="hidden mt-6">
                     <div class="grid grid-cols-2 gap-3 mb-5 bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <div><label class="text-xs text-gray-400 block mb-1">Artikel Number</label><input type="text" id="f_artikel" readonly class="w-full bg-transparent font-semibold text-sm outline-none"></div>
                         <div><label class="text-xs text-gray-400 block mb-1">Deskripsi</label><input type="text" id="f_deskripsi" readonly class="w-full bg-transparent font-semibold text-sm outline-none"></div>
@@ -164,15 +175,14 @@
                         <div id="wrapQtySystem" class="col-span-2"><label class="text-xs text-blue-500 font-bold block mb-1">Qty System (Admin)</label><input type="text" id="f_qtySystem" readonly class="w-full bg-transparent font-bold text-blue-600 text-lg outline-none"></div>
                     </div>
 
-                    <!-- Input Actual & Note -->
                     <div class="mb-4">
                         <label class="block text-gray-800 font-bold mb-2 text-lg">Qty Actual (Fisik)</label>
-                        <input type="number" id="f_qtyActual" placeholder="0" class="ios-input text-2xl font-bold text-center border-blue-300 focus:border-blue-500">
+                        <input type="number" id="f_qtyActual" placeholder="0" class="ios-input text-2xl font-bold text-center border-blue-300 focus:border-blue-500" onkeypress="if(event.key === 'Enter') document.getElementById('f_note').focus()">
                     </div>
                     
                     <div class="mb-6">
                         <label class="block text-gray-500 text-sm font-semibold mb-2">Catatan (Opsional)</label>
-                        <input type="text" id="f_note" placeholder="Kondisi barang / keterangan..." class="ios-input text-sm">
+                        <input type="text" id="f_note" placeholder="Kondisi barang / keterangan..." class="ios-input text-sm" onkeypress="if(event.key === 'Enter') saveData()">
                     </div>
 
                     <button onclick="saveData()" class="ios-btn-primary bg-green-500 hover:bg-green-600 shadow-lg text-lg"><i class="fas fa-check-circle mr-2"></i> SIMPAN DATA</button>
@@ -190,12 +200,11 @@
                 <table class="min-w-full text-sm text-left text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 rounded-t-lg">
                         <tr>
-                            <th class="py-3 px-4 rounded-tl-lg">Waktu</th>
-                            <th class="py-3 px-4">User</th>
+                            <th class="py-3 px-4">Waktu</th>
                             <th class="py-3 px-4">Lokasi</th>
                             <th class="py-3 px-4">Artikel</th>
                             <th class="py-3 px-4 text-center">Qty</th>
-                            <th class="py-3 px-4 rounded-tr-lg">Status</th>
+                            <th class="py-3 px-4">Status</th>
                         </tr>
                     </thead>
                     <tbody id="historyTableBody"></tbody>
@@ -216,10 +225,9 @@
                         <tr>
                             <th class="py-3 px-3">Lokasi</th>
                             <th class="py-3 px-3">Artikel</th>
-                            <th class="py-3 px-3">Deskripsi</th>
-                            <th class="py-3 px-2 text-center">System</th>
-                            <th class="py-3 px-2 text-center">Actual</th>
-                            <th class="py-3 px-2 text-center">Selisih</th>
+                            <th class="py-3 px-2 text-center">Sys</th>
+                            <th class="py-3 px-2 text-center">Act</th>
+                            <th class="py-3 px-2 text-center">Slsih</th>
                             <th class="py-3 px-3">Aksi</th>
                         </tr>
                     </thead>
@@ -230,21 +238,39 @@
 
     </div>
 
+    <!-- MODAL PILIH LOKASI -->
+    <div id="locationModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center fade-in">
+        <div class="ios-card w-11/12 max-w-md bg-white rounded-2xl overflow-hidden flex flex-col max-h-[80vh]">
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-lg text-gray-800">Pilih / Cari Lokasi</h3>
+                <button onclick="closeLocationModal()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-2xl"></i></button>
+            </div>
+            <div class="p-4 flex-1 flex flex-col overflow-hidden">
+                <input type="text" id="searchLocationInput" placeholder="Ketik untuk mencari lokasi..." class="ios-input mb-4" onkeyup="filterLocations()">
+                <div id="locationListContainer" class="overflow-y-auto flex-1 space-y-2">
+                    <!-- List Lokasi akan dirender di sini -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MAIN SCRIPT -->
     <script>
         // === GANTI URL INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA ===
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyZmXvf65EMZ7_YjhfgtDZhkktTIgFMpx0vVTLEreKL9PDIZeyuHVX_sDF5X38gdo3V4g/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbywCJo9Pu0UgOwq1Z0HbndBC2ye8UtkFfg_HxTB9jTFX5HEj5oTFMjgWpBZWY7CzpAmaA/exec"; 
 
         // State Management
         let currentUser = null;
         let currentRole = null;
         let availableLocations = [];
         let currentScanStatus = 'unknown';
-        let editRowIndex = null; // Menyimpan baris untuk fungsi REPLACE/EDIT
+        let editRowIndex = null;
+        let editMode = ''; // 'add' atau 'replace'
         
         // Scanner Instance
         let html5QrCode = null;
         let isScannerOpen = false;
+        let scanTargetId = 'scanCode'; // Bisa 'scanCode' atau 'lokasi'
 
         // --- CORE FUNCTIONS ---
         async function fetchGAS(action, params = {}) {
@@ -254,13 +280,10 @@
                 formData.append(key, params[key]);
             }
             try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    body: formData
-                });
+                const response = await fetch(GAS_URL, { method: 'POST', body: formData });
                 return await response.json();
             } catch (error) {
-                Swal.fire('Koneksi Error', 'Gagal terhubung ke server. Pastikan internet aktif.', 'error');
+                Swal.fire('Koneksi Error', 'Gagal terhubung ke server.', 'error');
                 return null;
             }
         }
@@ -283,18 +306,18 @@
                 document.getElementById('mainSection').classList.remove('hidden');
                 document.getElementById('userInfo').innerText = `${currentUser} (${currentRole})`;
                 
-                // Konfigurasi Role
                 if(currentRole === 'staff') {
                     document.getElementById('wrapQtySystem').classList.add('hidden');
                     document.getElementById('btnVerif').classList.add('hidden');
                 } else {
                     document.getElementById('wrapQtySystem').classList.remove('hidden');
-                    document.getElementById('btnVerif').classList.remove('hidden'); // Munculkan tab verifikasi untuk admin
+                    document.getElementById('btnVerif').classList.remove('hidden'); 
                 }
 
                 loadLocations();
+                setTimeout(() => document.getElementById('lokasi').focus(), 500);
             } else {
-                Swal.fire('Gagal', res.message || 'Login gagal', 'error');
+                Swal.fire('Gagal', res.message, 'error');
             }
         }
 
@@ -314,7 +337,6 @@
             });
             document.getElementById(tabId).classList.remove('hidden');
             
-            // Tab styling (iOS segmented control)
             document.getElementById('btnForm').className = tabId === 'formTab' ? "ios-segment active" : "ios-segment";
             document.getElementById('btnHistory').className = tabId === 'historyTab' ? "ios-segment active" : "ios-segment";
             if(document.getElementById('btnVerif')) {
@@ -325,9 +347,11 @@
             if(tabId === 'verifikasiTab') loadVerifikasi();
         }
 
-        // --- CAMERA SCANNER LOGIC ---
-        function toggleScanner() {
+        // --- CAMERA SCANNER LOGIC (Multitarget) ---
+        function toggleScanner(targetId) {
+            scanTargetId = targetId; // set target ke mana hasil scan masuk
             const readerDiv = document.getElementById("reader");
+            
             if(isScannerOpen) {
                 stopScanner();
             } else {
@@ -337,13 +361,16 @@
                     { facingMode: "environment" }, 
                     { fps: 10, qrbox: {width: 250, height: 250} },
                     (decodedText) => {
-                        document.getElementById('scanCode').value = decodedText;
+                        document.getElementById(scanTargetId).value = decodedText;
                         stopScanner();
-                        processScan(); // Auto process setelah berhasil scan
+                        
+                        // Auto trigger
+                        if(scanTargetId === 'scanCode') processScan();
+                        if(scanTargetId === 'lokasi') checkNewLocation();
                     },
                     (errorMessage) => { /* ignore */ }
                 ).then(() => { isScannerOpen = true; }).catch(err => {
-                    Swal.fire('Kamera Error', 'Tidak dapat mengakses kamera perangkat.', 'error');
+                    Swal.fire('Kamera Error', 'Tidak dapat mengakses kamera.', 'error');
                     readerDiv.style.display = "none";
                 });
             }
@@ -359,22 +386,56 @@
             }
         }
 
-        // --- FORM LOGIC ---
+        // --- LOCATION LOGIC ---
         async function loadLocations() {
             let res = await fetchGAS('getLocations');
             if (res && res.status === 'success') {
                 availableLocations = res.data;
-                let dl = document.getElementById('lokasiList');
-                dl.innerHTML = ''; // bersihkan
-                availableLocations.forEach(loc => {
-                    let opt = document.createElement('option');
-                    opt.value = loc;
-                    dl.appendChild(opt);
-                });
+                renderLocationList();
             }
         }
 
-        async function checkLocation() {
+        function openLocationModal() {
+            document.getElementById('locationModal').classList.remove('hidden');
+            document.getElementById('searchLocationInput').value = '';
+            renderLocationList();
+            setTimeout(() => document.getElementById('searchLocationInput').focus(), 100);
+        }
+
+        function closeLocationModal() {
+            document.getElementById('locationModal').classList.add('hidden');
+        }
+
+        function renderLocationList(filterText = '') {
+            let container = document.getElementById('locationListContainer');
+            container.innerHTML = '';
+            
+            let filtered = availableLocations.filter(loc => loc.toLowerCase().includes(filterText.toLowerCase()));
+            
+            if(filtered.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 text-center mt-4 text-sm">Lokasi tidak ditemukan. Ketik di form luar untuk menambah lokasi baru.</p>`;
+                return;
+            }
+
+            filtered.forEach(loc => {
+                let div = document.createElement('div');
+                div.className = 'p-3 bg-gray-50 rounded-lg border border-gray-100 font-bold text-gray-700 cursor-pointer hover:bg-blue-50 hover:text-blue-600 transition';
+                div.innerHTML = `<i class="fas fa-map-marker-alt mr-2 text-gray-400"></i> ${loc}`;
+                div.onclick = () => {
+                    document.getElementById('lokasi').value = loc;
+                    closeLocationModal();
+                    document.getElementById('scanCode').focus();
+                };
+                container.appendChild(div);
+            });
+        }
+
+        function filterLocations() {
+            let text = document.getElementById('searchLocationInput').value;
+            renderLocationList(text);
+        }
+
+        async function checkNewLocation() {
             let locInput = document.getElementById('lokasi').value.toUpperCase().trim();
             if (!locInput) return;
 
@@ -393,9 +454,6 @@
                     let res = await fetchGAS('addLocation', { locationName: locInput });
                     if (res.status === 'success') {
                         availableLocations.push(locInput);
-                        let opt = document.createElement('option');
-                        opt.value = locInput;
-                        document.getElementById('lokasiList').appendChild(opt);
                         Swal.fire('Berhasil', 'Lokasi ditambahkan', 'success');
                     }
                 } else {
@@ -404,10 +462,7 @@
             }
         }
 
-        document.getElementById('scanCode').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') processScan();
-        });
-
+        // --- SCAN LOGIC ---
         async function processScan() {
             let code = document.getElementById('scanCode').value.trim();
             let lokasi = document.getElementById('lokasi').value.trim();
@@ -415,50 +470,52 @@
             if(!lokasi) return Swal.fire('Perhatian', 'Pilih Lokasi terlebih dahulu!', 'warning');
             if(!code) return;
 
-            // Tutup detail form jika terbuka
             document.getElementById('detailSection').classList.add('hidden');
-            editRowIndex = null; // Reset indeks
+            editRowIndex = null; 
+            editMode = '';
 
             Swal.showLoading();
             let res = await fetchGAS('checkItem', { scanCode: code, lokasi: lokasi });
             Swal.close();
 
-            // CEK APAKAH ADA DUPLIKAT DI LOKASI INI
+            // POP UP REPLACE / ADD / BATAL
             if (res && res.duplicate) {
                 let action = await Swal.fire({
-                    title: 'Item Sudah Di-scan!',
-                    text: `Barang ini sudah ada di lokasi ${lokasi} dengan Qty Actual: ${res.duplicate.qtyActual}. Apa yang ingin Anda lakukan?`,
+                    title: 'Barang Sudah Di-Scan!',
+                    text: `Di lokasi ${lokasi}, barang ini sudah tercatat dengan total Qty = ${res.duplicate.qtyActual}.`,
                     icon: 'warning',
                     showDenyButton: true,
                     showCancelButton: true,
-                    confirmButtonText: 'Replace (Tiban)',
-                    denyButtonText: 'Edit (Ubah Qty)',
+                    confirmButtonText: 'Add (Tambah)', // Tombol biru kanan
+                    denyButtonText: 'Replace (Tiban)', // Tombol merah kiri
                     cancelButtonText: 'Batal',
-                    confirmButtonColor: '#d33', // Merah untuk replace
-                    denyButtonColor: '#3085d6', // Biru untuk edit
+                    confirmButtonColor: '#007AFF', // Biru iOS
+                    denyButtonColor: '#FF3B30', // Merah iOS
                 });
 
                 if (action.isConfirmed) {
-                    // REPLACE -> Kosongkan input qty
+                    // USER PILIH ADD (TAMBAH)
                     editRowIndex = res.duplicate.rowIndex;
-                    document.getElementById('f_qtyActual').value = '';
+                    editMode = 'add';
+                    document.getElementById('f_qtyActual').value = ''; 
                     document.getElementById('f_note').value = res.duplicate.catatan;
                 } else if (action.isDenied) {
-                    // EDIT -> Isi dengan nilai lama
+                    // USER PILIH REPLACE (GANTI)
                     editRowIndex = res.duplicate.rowIndex;
-                    document.getElementById('f_qtyActual').value = res.duplicate.qtyActual;
+                    editMode = 'replace';
+                    document.getElementById('f_qtyActual').value = res.duplicate.qtyActual; // Tampilkan qty lama utk diedit/ditiban
                     document.getElementById('f_note').value = res.duplicate.catatan;
                 } else {
                     document.getElementById('scanCode').value = '';
-                    return; // Batal, berhenti di sini
+                    document.getElementById('scanCode').focus();
+                    return; // Dibatalkan, berhenti di sini
                 }
             } else {
-                // Bersihkan form untuk input baru
                 document.getElementById('f_qtyActual').value = '';
                 document.getElementById('f_note').value = '';
             }
 
-            // TAMPILKAN DETAIL
+            // MUNCULKAN DETAIL INSTAN (Tanpa Animasi Fade In)
             document.getElementById('detailSection').classList.remove('hidden');
 
             if (res && res.status === 'found') {
@@ -472,8 +529,8 @@
                 document.getElementById('f_qtyActual').focus();
             } else {
                 let confirm = await Swal.fire({
-                    title: 'Tidak Ditemukan',
-                    text: "Kode tidak ada di Master Data. Lanjutkan sebagai barang tidak dikenal (Unknown)?",
+                    title: 'Data Tidak Ditemukan',
+                    text: "Item ini tidak ada di Master Data. Lanjutkan sebagai barang Unknown?",
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: 'Ya, Lanjutkan',
@@ -481,7 +538,7 @@
                 });
 
                 if (confirm.isConfirmed) {
-                    document.getElementById('f_artikel').value = code; // pakai kode scan sebagai artikel
+                    document.getElementById('f_artikel').value = code;
                     document.getElementById('f_deskripsi').value = 'UNKNOWN';
                     document.getElementById('f_dept').value = '-';
                     document.getElementById('f_brand').value = '-';
@@ -502,40 +559,31 @@
             let note = document.getElementById('f_note').value;
 
             if(!lokasi || !scanCode || qtyActual === '') {
-                return Swal.fire('Error', 'Lokasi, Scan Code, dan Qty Actual wajib diisi!', 'error');
+                return Swal.fire('Error', 'Input Qty Actual wajib diisi!', 'error');
             }
 
             Swal.showLoading();
             let payload = {
-                user: currentUser,
-                lokasi: lokasi,
-                scanCode: scanCode,
+                user: currentUser, lokasi: lokasi, scanCode: scanCode,
                 artikelNumber: document.getElementById('f_artikel').value,
                 deskripsi: document.getElementById('f_deskripsi').value,
                 department: document.getElementById('f_dept').value,
                 brand: document.getElementById('f_brand').value,
-                vendor: 'N/A', // Boleh diabaikan jika tidak prioritas
-                qtySystem: document.getElementById('f_qtySystem').value || 0,
-                qtyActual: qtyActual,
-                statusData: currentScanStatus,
-                catatan: note,
-                editRowIndex: editRowIndex // Jika null, akan jadi insert baru di GAS
+                vendor: '-', qtySystem: document.getElementById('f_qtySystem').value || 0,
+                qtyActual: qtyActual, statusData: currentScanStatus, catatan: note,
+                editRowIndex: editRowIndex, editMode: editMode // 'add' atau 'replace'
             };
 
             let res = await fetchGAS('saveData', payload);
             if(res && res.status === 'success') {
                 Swal.fire({
-                    title: 'Tersimpan!',
-                    text: res.message,
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
+                    title: 'Tersimpan!', text: res.message, icon: 'success',
+                    timer: 1500, showConfirmButton: false
                 });
                 
-                // Clear state setelah simpan
                 document.getElementById('scanCode').value = '';
                 document.getElementById('detailSection').classList.add('hidden');
-                editRowIndex = null;
+                editRowIndex = null; editMode = '';
                 document.getElementById('scanCode').focus();
             }
         }
@@ -554,15 +602,12 @@
                     let tr = document.createElement('tr');
                     tr.className = 'border-b hover:bg-gray-50';
                     tr.innerHTML = `
-                        <td class="py-3 px-4">${dateObj.toLocaleString('id-ID')}</td>
-                        <td class="py-3 px-4">${row.user}</td>
+                        <td class="py-3 px-4 text-xs">${dateObj.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</td>
                         <td class="py-3 px-4 font-semibold">${row.lokasi}</td>
-                        <td class="py-3 px-4">${row.artikel}<br><span class="text-xs text-gray-400">${row.deskripsi}</span></td>
-                        <td class="py-3 px-4 font-bold text-center text-blue-600 text-lg">${row.qtyActual}</td>
+                        <td class="py-3 px-4 text-xs">${row.artikel}<br><span class="text-gray-400">${row.deskripsi.substring(0,20)}...</span></td>
+                        <td class="py-3 px-4 font-bold text-center text-blue-600">${row.qtyActual}</td>
                         <td class="py-3 px-4">
-                            <span class="px-2 py-1 rounded-md text-xs font-bold text-white ${row.status === 'matched' ? 'bg-green-500' : 'bg-red-500'}">
-                                ${row.status.toUpperCase()}
-                            </span>
+                            <span class="px-2 py-1 rounded-md text-xs font-bold text-white ${row.status === 'matched' ? 'bg-green-500' : 'bg-red-500'}">${row.status.toUpperCase()}</span>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -580,25 +625,23 @@
                 let tbody = document.getElementById('verifikasiTableBody');
                 tbody.innerHTML = '';
                 if(res.data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4">Semua data aman! Tidak ada yang perlu diverifikasi.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4">Semua data aman!</td></tr>`;
                     return;
                 }
 
                 res.data.forEach(row => {
                     let selisih = row.qtyAct - row.qtySys;
                     let colorSelisih = selisih > 0 ? 'text-green-500' : (selisih < 0 ? 'text-red-500' : '');
-                    
                     let tr = document.createElement('tr');
                     tr.className = 'border-b hover:bg-red-50';
                     tr.innerHTML = `
                         <td class="py-3 px-3 font-semibold text-xs">${row.lokasi}</td>
                         <td class="py-3 px-3 text-xs font-mono">${row.artikel}</td>
-                        <td class="py-3 px-3 text-xs w-48 truncate" title="${row.deskripsi}">${row.deskripsi}</td>
                         <td class="py-3 px-2 text-center font-bold text-gray-400">${row.qtySys}</td>
                         <td class="py-3 px-2 text-center font-bold text-blue-600">${row.qtyAct}</td>
                         <td class="py-3 px-2 text-center font-bold ${colorSelisih}">${selisih > 0 ? '+'+selisih : selisih}</td>
                         <td class="py-3 px-3 text-center">
-                            <button onclick="approveVerifikasi('${row.rowIndex}')" class="bg-blue-500 text-white px-3 py-1 rounded text-xs font-bold hover:bg-blue-600 shadow"><i class="fas fa-check"></i> Verif</button>
+                            <button onclick="approveVerifikasi('${row.rowIndex}')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold shadow">Verif</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -611,7 +654,7 @@
             let res = await fetchGAS('verifyItem', { rowIndex: rowIndex });
             if (res && res.status === 'success') {
                 Swal.fire({title: 'Terverifikasi!', icon: 'success', timer: 1000, showConfirmButton: false});
-                loadVerifikasi(); // Muat ulang tabel
+                loadVerifikasi();
             }
         }
     </script>
