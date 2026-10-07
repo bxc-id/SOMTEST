@@ -214,7 +214,7 @@
     <!-- SCRIPT UTAMA -->
     <script>
         // === GANTI DENGAN URL DEPLOY ANDA ===
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwGXT1tyRONnZoiBAmGRhOAIbvW41CtIyfRLucvjr0rsPkvSFXbOJK_YLyD1bnvVVgX/exec"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw3NXvthcWCfnFMDmEzic2LaooXDrb-MEAvFjmyDQWVSWz0I4GVsxjTeXEiCUae_5O-pA/exec"; 
 
         let currentUser = null;
         let currentRole = null;
@@ -256,7 +256,7 @@
             document.getElementById('loginSection').classList.add('flex');
         };
 
-        // --- MIDDLEWARE API FETCH (PENAMBAHAN REDIRECT: FOLLOW UNTUK MENCEGAH CORS 404) ---
+        // --- MIDDLEWARE API FETCH ---
         async function fetchGAS(action, params = {}) {
             const formData = new URLSearchParams();
             formData.append('action', action);
@@ -268,7 +268,6 @@
             for (const key in params) { formData.append(key, params[key]); }
             
             try {
-                // REDIRECT FOLLOW DITAMBAHKAN AGAR BROWSER MENGIKUTI 302 DENGAN BENAR
                 const response = await fetch(GAS_URL, { 
                     method: 'POST', 
                     body: formData,
@@ -278,7 +277,7 @@
                 const json = await response.json();
                 
                 if(json.status === 'unauthorized') {
-                    Swal.fire('Sesi Berakhir!', 'Akun Anda telah login di perangkat lain atau sesi sudah kadaluarsa. Silakan login kembali.', 'error');
+                    Swal.fire('Sesi Berakhir!', 'Akun Anda telah login di perangkat lain atau sesi sudah kadaluarsa.', 'error');
                     logout(true);
                     return null;
                 }
@@ -428,7 +427,6 @@
             filtered.forEach(loc => {
                 let div = document.createElement('div');
                 div.className = 'p-3 bg-gray-50 rounded-lg border border-gray-100 font-bold text-gray-700 cursor-pointer hover:bg-blue-50 transition flex items-center gap-2';
-                // SVG Lokasi (Map Pin)
                 div.innerHTML = `<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> ${loc}`;
                 div.onclick = () => { document.getElementById('lokasi').value = loc; closeLocationModal(); document.getElementById('scanCode').focus(); };
                 container.appendChild(div);
